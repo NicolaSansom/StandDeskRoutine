@@ -1,0 +1,76 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "stand-track",
+  "title": "Stand Track",
+  "description": "A nifty menubar app that tracks your standing time, helps you meet daily targets.",
+  "icon": "command-icon.png",
+  "author": "nicola.sansom",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Track standing time",
+      "description": "Menu bar companion to track your daily standing desk usage.",
+      "mode": "menu-bar",
+      "interval": "10s"
+    }
+  ],
+  "preferences": [
+    {
+      "data": [
+        {
+          "title": "1 hour (default)",
+          "value": "3600"
+        },
+        {
+          "title": "2 hours",
+          "value": "7200"
+        },
+        {
+          "title": "3 hours",
+          "value": "10800"
+        },
+        {
+          "title": "4 hours",
+          "value": "14400"
+        },
+        {
+          "title": "5 hours",
+          "value": "18000"
+        },
+        {
+          "title": "6 hours",
+          "value": "21600"
+        }
+      ],
+      "default": "3600",
+      "description": "Your standing goal",
+      "name": "goal",
+      "required": false,
+      "title": "Daily standing goal",
+      "type": "dropdown"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.57.2",
+    "@raycast/utils": "^1.4.8"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "1.0.5",
+    "@types/node": "18.8.3",
+    "@types/react": "18.0.9",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

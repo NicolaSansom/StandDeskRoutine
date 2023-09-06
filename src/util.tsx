@@ -10,9 +10,7 @@ function currentTimestamp(): number {
 }
 
 function startTimer() {
-  timer = {
-    parts: [{ startedAt: currentTimestamp() }],
-  };
+  timer = { startedAt: currentTimestamp(), pausedAt: null, elapsed: 0 };
 
   cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
 }
@@ -20,8 +18,10 @@ function startTimer() {
 function pauseTimer() {
   const timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
 
-  if (timer?.parts) {
-    timer.parts[timer.parts.length - 1].pausedAt = currentTimestamp();
+  if (timer?.startedAt) {
+    timer.pausedAt = currentTimestamp();
+    timer.elapsed += timer.pausedAt - timer.startedAt;
+    timer.startedAt = null;
 
     cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
   }
@@ -30,8 +30,9 @@ function pauseTimer() {
 function resumeTimer() {
   const timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
 
-  if (timer?.parts?.[timer.parts.length - 1].pausedAt) {
-    timer.parts.push({ startedAt: currentTimestamp() });
+  if (timer?.pausedAt) {
+    timer.startedAt = currentTimestamp();
+    timer.pausedAt = null;
 
     cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
   }
@@ -43,21 +44,17 @@ function resetTimer() {
 
 function isTimerPaused(): boolean {
   const timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
-
-  return timer.parts ? !!timer.parts[timer.parts.length - 1].pausedAt : false; // Or whatever default value you would like when the timer is not set
+  return timer.pausedAt != null;
 }
 
 function getTimerState(): number | undefined {
   const timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
 
-  if (timer && timer.parts) {
-    const now = currentTimestamp();
-    let totalActiveTime = 0;
-    for (const part of timer.parts) {
-      const end = part.pausedAt ?? now;
-      totalActiveTime += end - part.startedAt;
-    }
-    return totalActiveTime;
+  if (timer?.startedAt) {
+    const elapsed = currentTimestamp() - timer.startedAt + timer.elapsed;
+    return elapsed;
+  } else if (timer?.elapsed) {
+    return timer.elapsed;
   }
   return undefined;
 }

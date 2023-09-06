@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "stand-track",
-  "title": "Stand Track",
+  "name": "stand-desk-track",
+  "title": "StandDeskTrack",
   "description": "A nifty menubar app that tracks your standing time, helps you meet daily targets.",
   "icon": "command-icon.png",
   "author": "nicola.sansom",

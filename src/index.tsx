@@ -5,7 +5,7 @@ import { formatTime } from "./formatTIme";
 
 export default function Command() {
   const [seconds, setSeconds] = useState(getTimerState() || 0);
-  const [isActive] = useState(typeof getTimerState() !== "undefined" ? !isTimerPaused() : false);
+  const isActive = typeof getTimerState() !== "undefined" ? !isTimerPaused() : false;
   const { goal } = getPreferenceValues();
   const goalNumber = parseInt(goal);
 
@@ -35,7 +35,7 @@ export default function Command() {
 
   return (
     <MenuBarExtra {...content}>
-      <MenuBarExtra.Item title={isActive ? "Stop Timer" : "Start Timer"} onAction={toggle} />
+      <MenuBarExtra.Item title={isActive ? "Pause Timer" : "Start Timer"} onAction={toggle} />
       <MenuBarExtra.Item title="Reset Timer" onAction={reset} />
     </MenuBarExtra>
   );

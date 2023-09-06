@@ -23,21 +23,21 @@ const startTimer = () => {
     elapsed: 0,
   };
 
-  cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
+  setTimerInCache(timer);
 };
 
 /**
  * Pauses the timer and updates the timer object in cache.
  */
 const pauseTimer = () => {
-  const timer: Timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
+  const timer: Timer = getTimerFromCache();
 
   if (timer?.startedAt) {
     timer.pausedAt = currentTimestamp();
     timer.elapsed += timer.pausedAt - timer.startedAt;
     timer.startedAt = null;
 
-    cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
+    setTimerInCache(timer);
   }
 };
 
@@ -45,13 +45,13 @@ const pauseTimer = () => {
  * Resumes the timer and updates the timer object in cache.
  */
 const resumeTimer = () => {
-  const timer: Timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
+  const timer: Timer = getTimerFromCache();
 
   if (timer?.pausedAt) {
     timer.startedAt = currentTimestamp();
     timer.pausedAt = null;
 
-    cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
+    setTimerInCache(timer);
   }
 };
 
@@ -67,7 +67,7 @@ const resetTimer = () => {
  * @returns {boolean} - True if the timer is paused, false otherwise.
  */
 const isTimerPaused = (): boolean => {
-  const timer: Timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
+  const timer: Timer = getTimerFromCache();
   return timer.pausedAt != null;
 };
 
@@ -76,7 +76,7 @@ const isTimerPaused = (): boolean => {
  * @returns {number | undefined} - The elapsed time in seconds if the timer is started or paused, undefined otherwise.
  */
 const getTimerState = (): number | undefined => {
-  const timer: Timer = JSON.parse(cache.get(TIMER_CACHE_KEY) || "{}");
+  const timer: Timer = getTimerFromCache();
 
   if (timer?.startedAt) {
     const elapsed = currentTimestamp() - timer.startedAt + timer.elapsed;
@@ -84,7 +84,25 @@ const getTimerState = (): number | undefined => {
   } else if (timer?.elapsed) {
     return timer.elapsed;
   }
+
   return undefined;
+};
+
+/**
+ * Retrieves the timer object from the cache.
+ * @returns {Timer} - The timer object.
+ */
+const getTimerFromCache = (): Timer => {
+  const timerData = cache.get(TIMER_CACHE_KEY) || "{}";
+  return JSON.parse(timerData);
+};
+
+/**
+ * Sets the timer object in the cache.
+ * @param {Timer} timer - The timer object to be stored in the cache.
+ */
+const setTimerInCache = (timer: Timer) => {
+  cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
 };
 
 export { startTimer, getTimerState, pauseTimer, resumeTimer, resetTimer, isTimerPaused };

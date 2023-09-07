@@ -29,10 +29,17 @@ export default function Command() {
     }
   }, [environment.launchType, isActive]);
 
-  const content = isActive
+  const timerContent = isActive
     ? { icon: Icon.ArrowUp, title: formatTime(seconds, goalNumber) }
     : { icon: Icon.ArrowDown, title: formatTime(seconds, goalNumber) };
 
+  const timerComplete = seconds > goal;
+  const completeContent = {
+    icon: Icon.Check,
+    title: "",
+  };
+
+  const content = timerComplete ? completeContent : timerContent;
   return (
     <MenuBarExtra {...content}>
       <MenuBarExtra.Item title={isActive ? "Pause Timer" : "Start Timer"} onAction={toggle} />

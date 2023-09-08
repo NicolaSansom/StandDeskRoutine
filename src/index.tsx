@@ -20,6 +20,7 @@ export default function Command() {
   };
 
   const reset = (): void => {
+    console.log("🚀 ~ file: index.tsx:25 ~ reset ~ reset:", reset);
     resetTimer();
   };
 
@@ -29,6 +30,9 @@ export default function Command() {
     }
   }, [environment.launchType, isActive]);
 
+  console.log("🚀 ~ file: index.tsx:29 ~ useEffect ~ getTimerState():", getTimerState());
+  console.log("🚀 ~ file: index.tsx:28 ~ useEffect ~ environment.launchType:", environment.launchType);
+  console.log("seconds", seconds);
   const timerContent = isActive
     ? { icon: Icon.ArrowUp, title: formatTime(seconds, goalNumber) }
     : { icon: Icon.ArrowDown, title: formatTime(seconds, goalNumber) };

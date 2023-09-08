@@ -1,6 +1,6 @@
 import { Cache } from "@raycast/api";
 
-const TIMER_CACHE_KEY = "timer";
+const TIMER_CACHE_KEY = "timer-standing-desk";
 const cache = new Cache();
 
 type Timer = {
@@ -59,6 +59,7 @@ const resumeTimer = () => {
  * Resets the timer by removing the timer object from cache.
  */
 const resetTimer = () => {
+  console.log("🚀 ~ file: util.tsx:62 ~ resetTimer ~ resetTimer:", resetTimer);
   cache.remove(TIMER_CACHE_KEY);
 };
 
@@ -77,6 +78,7 @@ const isTimerPaused = (): boolean => {
  */
 const getTimerState = (): number | undefined => {
   const timer: Timer = getTimerFromCache();
+  console.log("🚀 ~ file: util.tsx:80 ~ getTimerState ~ timer:", timer);
 
   if (timer?.startedAt) {
     const elapsed = currentTimestamp() - timer.startedAt + timer.elapsed;
@@ -94,6 +96,7 @@ const getTimerState = (): number | undefined => {
  */
 const getTimerFromCache = (): Timer => {
   const timerData = cache.get(TIMER_CACHE_KEY) || "{}";
+  console.log("🚀 ~ file: util.tsx:99 ~ getTimerFromCache ~  cache.get(TIMER_CACHE_KEY):", cache.get(TIMER_CACHE_KEY));
   return JSON.parse(timerData);
 };
 
@@ -102,6 +105,7 @@ const getTimerFromCache = (): Timer => {
  * @param {Timer} timer - The timer object to be stored in the cache.
  */
 const setTimerInCache = (timer: Timer) => {
+  console.log("🚀 ~ file: util.tsx:107 ~ setTimerInCache ~ timer:", timer);
   cache.set(TIMER_CACHE_KEY, JSON.stringify(timer));
 };
 

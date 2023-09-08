@@ -1,43 +1,42 @@
-import { MenuBarExtra, Icon, LaunchType, environment, getPreferenceValues } from "@raycast/api";
-import { useState, useEffect } from "react";
-import { startTimer, pauseTimer, resumeTimer, resetTimer, isTimerPaused, getTimerState } from "./util";
+import { MenuBarExtra, Icon, getPreferenceValues, PreferenceValues } from "@raycast/api";
+import useTimer from "./useTimer";
 import { formatTime } from "./formatTIme";
 
 export default function Command() {
-  const [seconds, setSeconds] = useState(getTimerState() || 0);
-  const isActive = typeof getTimerState() !== "undefined" ? !isTimerPaused() : false;
-  const { goal } = getPreferenceValues();
+  const {
+    isLoading,
+    timerState,
+    refreshTimerState,
+    handleStartTimer,
+    handlePauseTimer,
+    handleResumeTimer,
+    handleResetTimer,
+  } = useTimer();
+  const { goal } = getPreferenceValues<PreferenceValues>();
   const goalNumber = parseInt(goal);
 
+  if (isLoading) {
+    refreshTimerState();
+  }
+
   const toggle = (): void => {
-    if (!isTimerPaused() && getTimerState() == null) {
-      startTimer();
-    } else if (isTimerPaused()) {
-      resumeTimer();
+    if (timerState === undefined) {
+      handleStartTimer();
     } else {
-      pauseTimer();
+      timerState === 0 ? handleResumeTimer() : handlePauseTimer();
     }
   };
 
   const reset = (): void => {
-    console.log("🚀 ~ file: index.tsx:25 ~ reset ~ reset:", reset);
-    resetTimer();
+    handleResetTimer();
   };
 
-  useEffect(() => {
-    if (environment.launchType === LaunchType.Background && isActive) {
-      setSeconds(getTimerState() || 0);
-    }
-  }, [environment.launchType, isActive]);
+  const timerContent =
+    timerState && timerState > 0
+      ? { icon: Icon.ArrowUp, title: formatTime(timerState, goalNumber) }
+      : { icon: Icon.ArrowDown, title: formatTime(timerState || 0, goalNumber) };
 
-  console.log("🚀 ~ file: index.tsx:29 ~ useEffect ~ getTimerState():", getTimerState());
-  console.log("🚀 ~ file: index.tsx:28 ~ useEffect ~ environment.launchType:", environment.launchType);
-  console.log("seconds", seconds);
-  const timerContent = isActive
-    ? { icon: Icon.ArrowUp, title: formatTime(seconds, goalNumber) }
-    : { icon: Icon.ArrowDown, title: formatTime(seconds, goalNumber) };
-
-  const timerComplete = seconds > goal;
+  const timerComplete = timerState && timerState > goal;
   const completeContent = {
     icon: Icon.Check,
     title: "",
@@ -46,7 +45,7 @@ export default function Command() {
   const content = timerComplete ? completeContent : timerContent;
   return (
     <MenuBarExtra {...content}>
-      <MenuBarExtra.Item title={isActive ? "Pause Timer" : "Start Timer"} onAction={toggle} />
+      <MenuBarExtra.Item title={timerState && timerState > 0 ? "Pause Timer" : "Start Timer"} onAction={toggle} />
       <MenuBarExtra.Item title="Reset Timer" onAction={reset} />
     </MenuBarExtra>
   );

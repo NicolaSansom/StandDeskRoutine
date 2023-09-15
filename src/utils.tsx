@@ -2,6 +2,7 @@ import { environment } from "@raycast/api";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
 interface Timer {
+  date: string;
   startedAt: number | null;
   pausedAt: number | null;
   elapsed: number;
@@ -13,64 +14,76 @@ const currentTimestamp = (): number => {
   return Math.floor(Date.now() / 1000);
 };
 
-const getTimerFromJsonFile = (): Timer => {
-  let timerData = "{}";
-  if (existsSync(TIMER_FILE_PATH)) {
-    timerData = readFileSync(TIMER_FILE_PATH, "utf-8");
-  }
-
-  return JSON.parse(timerData);
+const currentDate = (): string => {
+  return new Date().toISOString().split("T")[0]; // returns YYYY-MM-DD format
 };
 
-const saveTimerToJsonFile = (timer: Timer) => {
-  writeFileSync(TIMER_FILE_PATH, JSON.stringify(timer));
+const getTimersFromJsonFile = (): Timer[] => {
+  let timersData = "[]";
+  if (existsSync(TIMER_FILE_PATH)) {
+    timersData = readFileSync(TIMER_FILE_PATH, "utf-8");
+  }
+
+  return JSON.parse(timersData);
+};
+
+const saveTimersToJsonFile = (timers: Timer[]) => {
+  writeFileSync(TIMER_FILE_PATH, JSON.stringify(timers));
 };
 
 const startTimer = () => {
+  const timers = getTimersFromJsonFile();
   const timer: Timer = {
+    date: currentDate(),
     startedAt: currentTimestamp(),
     pausedAt: null,
     elapsed: 0,
   };
 
-  saveTimerToJsonFile(timer);
+  timers.push(timer);
+
+  saveTimersToJsonFile(timers);
 };
 
 const pauseTimer = () => {
-  const timer = getTimerFromJsonFile();
+  const timers = getTimersFromJsonFile();
+  const timer = timers.find((t) => t.date === currentDate());
 
   if (timer?.startedAt) {
     timer.pausedAt = currentTimestamp();
     timer.elapsed += timer.pausedAt - timer.startedAt;
     timer.startedAt = null;
 
-    saveTimerToJsonFile(timer);
+    saveTimersToJsonFile(timers);
   }
 };
 
 const resumeTimer = () => {
-  const timer = getTimerFromJsonFile();
+  const timers = getTimersFromJsonFile();
+  const timer = timers.find((t) => t.date === currentDate());
 
   if (timer?.pausedAt) {
     timer.startedAt = currentTimestamp();
     timer.pausedAt = null;
 
-    saveTimerToJsonFile(timer);
+    saveTimersToJsonFile(timers);
   }
 };
 
 const resetTimer = () => {
-  if (existsSync(TIMER_FILE_PATH)) {
-    saveTimerToJsonFile({
-      startedAt: null,
-      pausedAt: null,
-      elapsed: 0,
-    });
+  const timers = getTimersFromJsonFile();
+  const index = timers.findIndex((t) => t.date === currentDate());
+
+  if (index >= 0) {
+    timers.splice(index, 1);
   }
+
+  saveTimersToJsonFile(timers);
 };
 
 const getTimerState = (): number | undefined => {
-  const timer = getTimerFromJsonFile();
+  const timers = getTimersFromJsonFile();
+  const timer = timers.find((t) => t.date === currentDate());
 
   if (timer?.startedAt) {
     return currentTimestamp() - timer.startedAt + timer.elapsed;

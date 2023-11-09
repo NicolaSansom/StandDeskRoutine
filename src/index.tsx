@@ -2,6 +2,18 @@ import { MenuBarExtra, Icon, getPreferenceValues, PreferenceValues } from "@rayc
 import useTimer from "./useTimer";
 import { formatTime } from "./formatTIme";
 
+const copy = (timerState: number | undefined, timerPaused: number | boolean) => {
+  if (timerState === undefined) {
+    return "Start Timer";
+  }
+
+  if (timerPaused) {
+    return "Resume Timer";
+  }
+
+  return "Pause Timer";
+};
+
 export default function Command() {
   const {
     isLoading,
@@ -11,9 +23,11 @@ export default function Command() {
     handlePauseTimer,
     handleResumeTimer,
     handleResetTimer,
+    getPauseState,
   } = useTimer();
   const { goal } = getPreferenceValues<PreferenceValues>();
   const goalNumber = parseInt(goal);
+  const timerPaused = typeof getPauseState() === "number";
 
   if (isLoading) {
     refreshTimerState();
@@ -23,7 +37,7 @@ export default function Command() {
     if (timerState === undefined) {
       handleStartTimer();
     } else {
-      timerState === 0 ? handleResumeTimer() : handlePauseTimer();
+      timerPaused ? handleResumeTimer() : handlePauseTimer();
     }
   };
 
@@ -32,7 +46,7 @@ export default function Command() {
   };
 
   const timerContent =
-    timerState && timerState > 0
+    timerState && timerState > 0 && !timerPaused
       ? { icon: Icon.ArrowUp, title: formatTime(timerState, goalNumber) }
       : { icon: Icon.ArrowDown, title: formatTime(timerState || 0, goalNumber) };
 
@@ -45,7 +59,7 @@ export default function Command() {
   const content = timerComplete ? completeContent : timerContent;
   return (
     <MenuBarExtra {...content}>
-      <MenuBarExtra.Item title={timerState && timerState > 0 ? "Pause Timer" : "Start Timer"} onAction={toggle} />
+      <MenuBarExtra.Item title={copy(timerState, timerPaused)} onAction={toggle} />
       <MenuBarExtra.Item title="Reset Timer" onAction={reset} />
     </MenuBarExtra>
   );

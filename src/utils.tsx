@@ -81,6 +81,17 @@ const resetTimer = () => {
   saveTimersToJsonFile(timers);
 };
 
+const getPauseState = (): boolean | number => {
+  const timers = getTimersFromJsonFile();
+  const timer = timers.find((t) => t.date === currentDate());
+
+  if (timer?.pausedAt) {
+    return timer?.pausedAt;
+  }
+
+  return false;
+};
+
 const getTimerState = (): number | undefined => {
   const timers = getTimersFromJsonFile();
   const timer = timers.find((t) => t.date === currentDate());
@@ -94,4 +105,4 @@ const getTimerState = (): number | undefined => {
   return undefined;
 };
 
-export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer };
+export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState };

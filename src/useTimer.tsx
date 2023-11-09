@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer } from "./utils";
+import { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState } from "./utils";
 
 export default function useTimer() {
   const [timerState, setTimerState] = useState<number | undefined>(undefined);
@@ -32,6 +32,7 @@ export default function useTimer() {
   };
 
   return {
+    getPauseState,
     timerState,
     isLoading,
     refreshTimerState,

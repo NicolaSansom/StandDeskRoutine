@@ -11,11 +11,17 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
-      "title": "Track standing time",
+      "name": "menu-bar",
+      "title": "Track Standing Time",
       "description": "Menu bar companion to track your daily standing desk usage.",
       "mode": "menu-bar",
       "interval": "10s"
+    },
+    {
+      "name": "stand-goal-history",
+      "title": "Stand Goal History",
+      "description": "See how often you meet your daily stand goal",
+      "mode": "view"
     }
   ],
   "preferences": [

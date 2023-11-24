@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { MenuBarExtra, Icon, getPreferenceValues, PreferenceValues } from "@raycast/api";
 import useTimer from "./useTimer";
 import { formatTime } from "./formatTIme";
@@ -24,10 +25,17 @@ export default function Command() {
     handleResumeTimer,
     handleResetTimer,
     getPauseState,
+    handleGoalComplete,
   } = useTimer();
   const { goal } = getPreferenceValues<PreferenceValues>();
   const goalNumber = parseInt(goal);
   const timerPaused = typeof getPauseState() === "number";
+
+  useEffect(() => {
+    if (timerState && timerState > goal) {
+      handleGoalComplete();
+    }
+  }, [timerState, goal]);
 
   if (isLoading) {
     refreshTimerState();

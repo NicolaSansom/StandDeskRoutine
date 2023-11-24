@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState } from "./utils";
+import { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState, goalComplete } from "./utils";
 
 export default function useTimer() {
   const [timerState, setTimerState] = useState<number | undefined>(undefined);
@@ -9,6 +9,10 @@ export default function useTimer() {
     const currentTimerState = getTimerState();
     setTimerState(currentTimerState);
     setIsLoading(false);
+  };
+
+  const handleGoalComplete = () => {
+    goalComplete();
   };
 
   const handleStartTimer = () => {
@@ -40,5 +44,6 @@ export default function useTimer() {
     handleStartTimer,
     handlePauseTimer,
     handleResumeTimer,
+    handleGoalComplete,
   };
 }

@@ -6,6 +6,7 @@ interface Timer {
   startedAt: number | null;
   pausedAt: number | null;
   elapsed: number;
+  goalComplete?: boolean;
 }
 
 const TIMER_FILE_PATH = environment.supportPath + "/timer-standing-desk.json";
@@ -38,6 +39,7 @@ const startTimer = () => {
     startedAt: currentTimestamp(),
     pausedAt: null,
     elapsed: 0,
+    goalComplete: false,
   };
 
   timers.push(timer);
@@ -105,4 +107,16 @@ const getTimerState = (): number | undefined => {
   return undefined;
 };
 
-export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState };
+const goalComplete = () => {
+  const timers = getTimersFromJsonFile();
+  const timer = timers.find((t) => t.date === currentDate());
+
+  if (timer && !timer?.goalComplete) {
+    timer.goalComplete = true;
+
+    saveTimersToJsonFile(timers);
+  }
+  return timer?.goalComplete;
+};
+
+export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState, goalComplete };

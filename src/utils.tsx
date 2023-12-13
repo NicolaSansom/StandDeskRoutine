@@ -1,7 +1,7 @@
 import { environment } from "@raycast/api";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
-interface Timer {
+export interface Timer {
   date: string;
   startedAt: number | null;
   pausedAt: number | null;
@@ -45,6 +45,10 @@ const startTimer = () => {
   timers.push(timer);
 
   saveTimersToJsonFile(timers);
+};
+
+const getAllTimers = (): Timer[] => {
+  return getTimersFromJsonFile();
 };
 
 const pauseTimer = () => {
@@ -119,4 +123,4 @@ const goalComplete = () => {
   return timer?.goalComplete;
 };
 
-export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getPauseState, goalComplete };
+export { startTimer, pauseTimer, resumeTimer, getTimerState, resetTimer, getAllTimers, getPauseState, goalComplete };

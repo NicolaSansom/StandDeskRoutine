@@ -1,17 +1,40 @@
 import { useEffect, useState } from "react";
 import { Grid } from "@raycast/api";
+import { getAllTimers } from "./utils";
 
-const items = [
-  { content: "🙈", keywords: ["see-no-evil", "monkey"] },
-  { content: "🥳", keywords: ["partying", "face"] },
-];
+interface TimeFormatted {
+  content: string;
+  key: string;
+  keywords: string[];
+}
 
 export default function Command() {
   const [searchText, setSearchText] = useState("");
-  const [filteredList, filterList] = useState(items);
+  const [timerItems, setTimerItems] = useState<TimeFormatted[]>([]);
 
   useEffect(() => {
-    filterList(items.filter((item) => item.keywords.some((keyword) => keyword.includes(searchText))));
+    const timers = getAllTimers();
+
+    const timerFormatted = timers
+      .map((t) => {
+        const isToday = new Date(t.date).toDateString() === new Date().toDateString();
+        let emoji: string;
+        if (isToday && !t.goalComplete) {
+          emoji = "⏳";
+        } else if (!t.goalComplete) {
+          emoji = "⬜";
+        } else {
+          emoji = "🟩";
+        }
+
+        return { content: emoji, keywords: [t.date], key: t.date };
+      })
+      .sort((a, b) => new Date(b.key).getTime() - new Date(a.key).getTime());
+
+    const filteredTimerFormatted = timerFormatted.filter((t) =>
+      t.keywords.some((keyword) => keyword.includes(searchText))
+    );
+    setTimerItems(filteredTimerFormatted);
   }, [searchText]);
 
   return (
@@ -20,11 +43,19 @@ export default function Command() {
       inset={Grid.Inset.Large}
       filtering={false}
       onSearchTextChange={setSearchText}
-      navigationTitle="Search Emoji"
-      searchBarPlaceholder="Search your favorite emoji"
+      navigationTitle="Seatch "
+      searchBarPlaceholder="Search by date"
     >
-      {filteredList.map((item) => (
-        <Grid.Item key={item.content} content={item.content} />
+      {timerItems.map((item) => (
+        <Grid.Item
+          key={item.key}
+          content={item.content}
+          title={new Date(item.key).toLocaleDateString(undefined, {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          })}
+        />
       ))}
     </Grid>
   );

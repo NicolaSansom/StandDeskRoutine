@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { MenuBarExtra, Icon, getPreferenceValues, PreferenceValues } from "@raycast/api";
 import useTimer from "./useTimer";
-import { formatTime } from "./formatTIme";
+import { formatTime, formatTotalTime } from "./formatTIme";
 
 const copy = (timerState: number | undefined, timerPaused: number | boolean) => {
   if (timerState === undefined) {
@@ -61,7 +61,7 @@ export default function Command() {
   const timerComplete = timerState && timerState > goal;
   const completeContent = {
     icon: Icon.Check,
-    title: "",
+    title: timerState && timerState > 0 ? formatTotalTime(timerState) : "",
   };
 
   const content = timerComplete ? completeContent : timerContent;

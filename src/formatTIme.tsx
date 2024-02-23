@@ -13,7 +13,7 @@ export function formatTime(seconds: number, goal: number): string {
   const secondsFormatted = formatValueWithUnit(seconds, "sec");
   const minutesFormatted = formatValueWithUnit(minutes, "min");
 
-  return `${percentagePassed}% - ${minutesFormatted} ${secondsFormatted}} left`;
+  return `${percentagePassed}% - ${minutesFormatted} ${secondsFormatted} left`;
 }
 
 export function formatTotalTime(seconds: number): string {
